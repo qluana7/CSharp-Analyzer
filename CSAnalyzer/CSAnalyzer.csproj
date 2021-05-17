@@ -1,0 +1,73 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForm>true</UseWindowsForm>
+    <LangVersion>9.0</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\Exit.png" />
+    <None Remove="Resources\Maximum.png" />
+    <None Remove="Resources\Minimum.png" />
+    <None Remove="Resources\New.png" />
+    <None Remove="Resources\Open.png" />
+    <None Remove="Resources\Redo.png" />
+    <None Remove="Resources\Run.png" />
+    <None Remove="Resources\Save.png" />
+    <None Remove="Resources\SaveAs.png" />
+    <None Remove="Resources\Status_Build.png" />
+    <None Remove="Resources\Status_Loading.png" />
+    <None Remove="Resources\Status_Preparing.png" />
+    <None Remove="Resources\Status_Ready.png" />
+    <None Remove="Resources\Status_Success.png" />
+    <None Remove="Resources\Undo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AvalonEdit" Version="6.1.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Exit.png" />
+    <Resource Include="Resources\Maximum.png" />
+    <Resource Include="Resources\Minimum.png" />
+    <Resource Include="Resources\New.png" />
+    <Resource Include="Resources\Open.png" />
+    <Resource Include="Resources\Redo.png" />
+    <Resource Include="Resources\Run.png" />
+    <Resource Include="Resources\Save.png" />
+    <Resource Include="Resources\SaveAs.png" />
+    <Resource Include="Resources\Status_Build.png" />
+    <Resource Include="Resources\Status_Loading.png" />
+    <Resource Include="Resources\Status_Preparing.png" />
+    <Resource Include="Resources\Status_Ready.png" />
+    <Resource Include="Resources\Status_Success.png" />
+    <Resource Include="Resources\Undo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Highlighting\SyntaxHighlighting.xshd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

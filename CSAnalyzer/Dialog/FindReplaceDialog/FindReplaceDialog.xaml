@@ -1,0 +1,163 @@
+﻿<Window x:Class="FindReplace.FindReplaceDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:my="clr-namespace:FindReplace"
+        Title="Find And Replace" Height="Auto" Width="300" ResizeMode="NoResize"
+        SizeToContent="Height" KeyDown="Window_KeyDown" WindowStyle="None"
+        ShowInTaskbar="False" Topmost="True"
+        FocusManager.IsFocusScope="True"
+        Left="{Binding WindowLeft, Mode=TwoWay}"
+        Top="{Binding WindowTop, Mode=TwoWay}"
+        Background="#3F3F3F"
+        >
+    <Window.Resources>
+        <my:SearchScopeToInt x:Key="searchScopeToInt"/>
+        <BooleanToVisibilityConverter x:Key="boolToVis" />
+        <my:BoolToInt x:Key="boolToInt"/>
+        <DataTemplate x:Key="FindPageTemplate">
+            <StackPanel>
+                <TextBlock Margin="3">Text to Find:</TextBlock>
+                <ContentPresenter Content="{Binding }" />
+                <StackPanel DataContext="{Binding DataContext}">
+                    <Expander Header="Options" IsExpanded="False" Foreground="White">
+                        <StackPanel>
+                            <CheckBox Margin="1" Name="chkCaseSensitive" IsChecked="{Binding CaseSensitive, Mode=TwoWay}"
+                                      Foreground="White">Case Sensitive</CheckBox>
+                            <CheckBox Margin="1" Name="chkSearchUp" IsChecked="{Binding SearchUp, Mode=TwoWay}"
+                                      Foreground="White">Search up</CheckBox>
+                            <CheckBox Margin="1" Name="chkWholeWord" IsChecked="{Binding WholeWord, Mode=TwoWay}"
+                                      Foreground="White">Match whole Word</CheckBox>
+                            <CheckBox Margin="1" Name="chkRegex" IsChecked="{Binding UseRegEx, Mode=TwoWay}"
+                                      Foreground="White">Regular Expression</CheckBox>
+                            <CheckBox Margin="1" Name="chkWildcards" IsChecked="{Binding UseWildcards, Mode=TwoWay}"
+                                      Foreground="White">Wildcards</CheckBox>
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+        <Style x:Key="ButtonBase" TargetType="Button" >
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="Gray"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="True">
+                    <Setter Property="Opacity" Value="1" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.6" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="TitleBarImage" TargetType="Image">
+            <Setter Property="Width" Value="14" />
+            <Setter Property="Opacity" Value=".4" />
+        </Style>
+        <Style x:Key="TitleButton" TargetType="Button" BasedOn="{StaticResource ButtonBase}">
+            <EventSetter Event="Click" Handler="Exit_Click"/>
+        </Style>
+        <Style TargetType="{x:Type TabItem}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabItem}">
+                        <Border>
+                            <Grid>
+                                <Grid>
+                                    <Border x:Name="border" BorderThickness="0" Margin="2,0"
+                                            Background="#3F3F3F" MinHeight="20" MinWidth="50"/>
+                                </Grid>
+                                <ContentPresenter ContentSource="Header"
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver"
+                                     Value="True">
+                                <Setter TargetName="border"
+                                        Property="Background"
+                                        Value="LightGray" />
+                            </Trigger>
+                            <Trigger Property="IsSelected"
+                                     Value="True">
+                                <Setter TargetName="border"
+                                        Property="Background"
+                                        Value="#1E1E1E" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <BitmapImage x:Key="Exit" UriSource="/Resources/Exit.png" />
+    </Window.Resources>
+    <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0" Background="Black" MouseDown="Grid_MouseDown" Height="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="25"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Foreground="White" Text="Find / Replace" Grid.Column="0" Margin="5,0,0,0"/>
+            <Button Style="{StaticResource TitleButton}" Grid.Column="1" x:Uid="Exit">
+                <Image Style="{StaticResource TitleBarImage}" Source="{StaticResource Exit}"/>
+            </Button>
+        </Grid>
+        <TabControl Name="tabMain" Height="Auto" BorderThickness="{Binding AllowReplace,  Converter={StaticResource boolToInt}}" Grid.Row="1"
+                    Background="#1E1E1E" Foreground="White">
+            <TabItem Name="tabFind"  ContentTemplate="{StaticResource FindPageTemplate}" Visibility="{Binding AllowReplace, Converter={StaticResource boolToVis}}">
+                <TabItem.Header>
+                    <TextBlock Foreground="White" Margin="4,0" HorizontalAlignment="Center">
+                        Find
+                    </TextBlock>
+                </TabItem.Header>
+                <StackPanel>
+                    <TextBox Margin="3" Name="txtFind" AcceptsReturn="{Binding AcceptsReturn}" Text="{Binding TextToFind, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Background="#3F3F3F" Foreground="White"/>
+                    <Button Margin="3" IsDefault="True" HorizontalAlignment="Right" Width="65" Click="FindNextClick"
+                            Style="{StaticResource ButtonBase}">Find Next</Button>
+                </StackPanel>
+            </TabItem>
+            <TabItem Name="tabReplace"  ContentTemplate="{StaticResource FindPageTemplate}" Visibility="{Binding AllowReplace, Converter={StaticResource boolToVis}}">
+                <TabItem.Header>
+                    <TextBlock Foreground="White" Margin="4,0" HorizontalAlignment="Center">
+                        Replace
+                    </TextBlock>
+                </TabItem.Header>
+                <StackPanel>
+                    <TextBox Margin="3" Name="txtFind2" AcceptsReturn="{Binding AcceptsReturn}" Text="{Binding TextToFind, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Background="#3F3F3F" Foreground="White"/>
+                    <TextBlock Margin="3" Foreground="White">Replace with:</TextBlock>
+                    <TextBox Margin="3" Name="txtReplace" AcceptsReturn="{Binding AcceptsReturn}" Text="{Binding ReplacementText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Background="#3F3F3F" Foreground="White"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button IsDefault="True" Margin="3" HorizontalAlignment="Right" Width="65" Click="FindNextClick"
+                                Style="{StaticResource ButtonBase}">Find Next</Button>
+                        <Button Margin="3" HorizontalAlignment="Right" Width="65" Click="ReplaceClick"
+                                Style="{StaticResource ButtonBase}">Replace</Button>
+                        <Button Margin="3" HorizontalAlignment="Right" Width="65" Click="ReplaceAllClick"
+                                Style="{StaticResource ButtonBase}">Replace all</Button>
+                    </StackPanel>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
