@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -21,6 +22,7 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using ICSharpCode.AvalonEdit.Search;
+using CSAnalyzer.Structures;
 
 namespace CSAnalyzer
 {
@@ -29,14 +31,40 @@ namespace CSAnalyzer
     /// </summary>
     public partial class Editor : Window
     {
-        public Analyzer Analyzer { get; set; }
+        public IAnaylzer Analyzer { get; set; }
 
         public Dictionary<string, string> RecentDictionary { get; set; }
 
         public Status CurrentStatus { get; set; }
 
         public string CurrentFile { get; set; }
-        public bool IsEdited { get; set; }
+        public Language CurrentLanguage { get; set; }
+
+        public Dictionary<string, IHighlightingDefinition> HighlightingDictionary { get; set; }
+
+        private bool isEdited;
+        public bool IsEdited
+        {
+            get { return isEdited; }
+            set
+            {
+                isEdited = value;
+
+                if (CurrentFile == null)
+                    return;
+
+                if (value)
+                {
+                    if (FileTextBox.Text[^1] != '*')
+                        FileTextBox.Text += "*";
+                }
+                else
+                {
+                    if (FileTextBox.Text[^1] == '*')
+                        FileTextBox.Text = FileTextBox.Text[0..^1];
+                }
+            }
+        }
 
         private bool IsDispose { get; set; }
 
@@ -49,8 +77,9 @@ namespace CSAnalyzer
 
         private void Init()
         {
-            Analyzer = new Analyzer(this);
+            Analyzer = new CSharpAnalyzer(this);
             RecentDictionary = new Dictionary<string, string>();
+            HighlightingDictionary = new Dictionary<string, IHighlightingDefinition>();
 
             TextEditor.TextChanged += (sender, e) =>
             {
@@ -61,12 +90,6 @@ namespace CSAnalyzer
                 ToolRedoButton.IsEnabled = TextEditor.CanRedo;
 
                 IsEdited = true;
-
-                if (System.IO.Path.GetFileNameWithoutExtension(FileTextBox.Text)[^1] != '*'
-                        && CurrentFile != null)
-                    FileTextBox.Text =
-                        $"{System.IO.Path.GetFileNameWithoutExtension(FileTextBox.Text)}" +
-                        $"*{System.IO.Path.GetExtension(FileTextBox.Text)}";
             };
 
             CurrentFile = null;
@@ -74,18 +97,33 @@ namespace CSAnalyzer
             ToolUndoButton.IsEnabled = false;
             ToolRedoButton.IsEnabled = false;
             ChangeIsEnabled(false);
+
+            Console.OpenStandardInput();
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             await Task.Delay(1);
-            XshdSyntaxDefinition xshd;
-            using (XmlReader reader = XmlReader.Create(@"Highlighting\SyntaxHighlighting.xshd"))
+
+            string[] syntaxs =
             {
-                xshd = HighlightingLoader.LoadXshd(reader);
+                "CSharp",
+                "Python"
+            };
+
+            for (int i = 0; i < syntaxs.Length; i++)
+            {
+                XshdSyntaxDefinition xshd;
+
+                using (XmlReader reader = XmlReader.Create(@$"Highlighting\{syntaxs[i]}Syntax.xshd"))
+                {
+                    xshd = HighlightingLoader.LoadXshd(reader);
+                }
+
+                HighlightingDictionary.Add(syntaxs[i], HighlightingLoader.Load(xshd, null));
             }
 
-            TextEditor.SyntaxHighlighting = HighlightingLoader.Load(xshd, null);
+            TextEditor.SyntaxHighlighting = HighlightingDictionary["CSharp"];
 
             Keyboard.AddKeyDownHandler(this, Editor_KeyDown);
 
@@ -126,14 +164,6 @@ namespace CSAnalyzer
                     completionWindow.CompletionList.RequestInsertion(e);
         }
 
-        public enum Status
-        {
-            Ready,
-            Preparing,
-            Build,
-            Loading
-        }
-
         public void ChangeStatus(Status sta, string str = null)
         {
             StatusImage.Source = (BitmapImage)Resources["Status_" + sta.ToString()];
@@ -161,7 +191,7 @@ namespace CSAnalyzer
                     WindowState = WindowState.Maximized;
             }
             else
-                Application.Current.Shutdown();
+                FileExit_Click(sender, e);
         }
 
         private void Editor_KeyDown(object sender, KeyEventArgs e)
@@ -212,20 +242,6 @@ namespace CSAnalyzer
                         RunSaveAsAndRun_Click(null, null);
                 }
                 #endregion
-            }
-
-            if (e.Key == Key.Enter)
-            {
-                var w1 = TextEditor.Text.Substring(0, TextEditor.CaretOffset).Trim();
-                var w2 = TextEditor.Text[TextEditor.CaretOffset..].Trim();
-                var w = new Tuple<char, char>(
-                    (w1.Length == 0) ? '\0' : w1[^1],
-                    (w2.Length == 0) ? '\0' : w2[0]);
-                if (w.Item1 == '{' && w.Item2 == '}')
-                {
-                    TextEditor.Text += "    \n";
-
-                }
             }
 
             if ((sender as Control).Name == "TextEditor")
@@ -351,6 +367,7 @@ namespace CSAnalyzer
                 MenuFileSave,
                 MenuFileSaveAs,
                 MenuFileClose,
+                //MenuFileExport,
                 ToolSaveButton,
                 ToolSaveAsButton,
                 ToolBuildButton,
@@ -418,13 +435,20 @@ namespace CSAnalyzer
             if (!await CheckSave())
                 return;
 
-            IsDispose = false;
+            IsDispose = true;
             IsEdited = false;
-            FileTextBox.Text = "unnamed.cs";
+            FileTextBox.Text = $@"unnamed.{CurrentLanguage switch
+                {
+                    Structures.Language.CSharp => "cs",
+                    Structures.Language.Python => "py"
+                }
+            }";
             TextEditor.Text = string.Empty;
             CurrentFile = string.Empty;
             EditGrid.Visibility = Visibility.Visible;
             ChangeIsEnabled(true);
+
+            IsDispose = false;
         }
 
         private async void FileOpen_Click(object sender, RoutedEventArgs e)
@@ -441,7 +465,7 @@ namespace CSAnalyzer
 
             if (open.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                IsDispose = false;
+                IsDispose = true;
                 var t = await System.IO.File.ReadAllTextAsync(open.FileName);
                 FileTextBox.Text = System.IO.Path.GetFileName(open.FileName);
                 TextEditor.Text = t;
@@ -450,6 +474,8 @@ namespace CSAnalyzer
                 ChangeIsEnabled(true);
 
                 RecordRecent(open.FileName);
+
+                IsDispose = false;
             }
 
             ChangeStatus(Status.Ready);
@@ -498,13 +524,45 @@ namespace CSAnalyzer
             }
         }
 
+        private void FileExport_Click(object sender, RoutedEventArgs e)
+        {
+            string pattern = Regex.Escape(@"^static void Main()*{*}").Replace(@"\*", ".*");
+            var match = Regex.Match(TextEditor.Text
+                .Replace(" ", string.Empty).Replace("\r", "")
+                .Replace("\n", ""), pattern);
+            string code;
+            if (!match.Success)
+            {
+                MessageBox.Show("There's no Main function.");
+                return;
+            }
+
+            code = match.Value;
+
+            string input = Microsoft.VisualBasic.Interaction
+                .InputBox("Input program name", "Export",
+                System.IO.Path.GetFileNameWithoutExtension(CurrentFile));
+
+            if (input == null)
+                return;
+
+            System.IO.File.WriteAllText(input, code);
+
+            var proc = Process.Start("csc.exe", input);
+            proc.WaitForExit();
+            MessageBox.Show("Success");
+        }
+
         private void FileProperties_Click(object sender, RoutedEventArgs e)
         {
 
         }
 
-        private void FileExit_Click(object sender, RoutedEventArgs e)
+        private async void FileExit_Click(object sender, RoutedEventArgs e)
         {
+            if (!await CheckSave())
+                return;
+                
             Application.Current.Shutdown();
         }
 
@@ -579,7 +637,16 @@ namespace CSAnalyzer
         {
             CompileTextBox.Text = string.Empty;
             ChangeStatus(Status.Build, "Compiling...");
-            Analyzer.Compile(TextEditor.Text);
+            var com = Analyzer.Compile(TextEditor.Text);
+
+            CompileTextBox.Text = com.Result;
+
+            if (!com.Exception)
+                StatusTextBlock.Text = "Status: Success";
+            else
+                StatusTextBlock.Text = "Status: Error";
+
+            AnalyzerTab.SelectedIndex = 0;
         }
 
         private async void RunRun_Click(object sender, RoutedEventArgs e)
@@ -587,7 +654,15 @@ namespace CSAnalyzer
             CompileTextBox.Text = string.Empty;
             ResultTextBox.Text = string.Empty;
             ChangeStatus(Status.Build, "Running");
-            await Analyzer.EvalCS(TextEditor.Text);
+            var com = await Analyzer.Evaluate(TextEditor.Text);
+            ResultTextBox.Text = com.Result;
+
+            if (com.Exception)
+                StatusTextBlock.Text = "Status: Error";
+            else
+                StatusTextBlock.Text = "Status: Success";
+
+            AnalyzerTab.SelectedIndex = 1;
         }
 
         private void RunSaveAndRun_Click(object sender, RoutedEventArgs e)
@@ -601,15 +676,33 @@ namespace CSAnalyzer
             FileSaveAs_Click(null, null);
             RunRun_Click(null, null);
         }
-        #endregion
 
-        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        private void LanguageCSharp_Click(object sender, RoutedEventArgs e)
         {
-            if (!CheckSave().GetAwaiter().GetResult())
+            if (!MenuLanguage.Items.Cast<MenuItem>().Any(l => l.IsChecked))
             {
-                e.Cancel = true;
-            }    
+                (sender as MenuItem).IsChecked = true;
+                return;
+            }
+
+            Analyzer = new CSharpAnalyzer(this);
+            CurrentLanguage = Structures.Language.CSharp;
+            TextEditor.SyntaxHighlighting = HighlightingDictionary["CSharp"];
         }
+
+        private void LanguagePython_Click(object sender, RoutedEventArgs e)
+        {
+            if (!MenuLanguage.Items.Cast<MenuItem>().Any(l => l.IsChecked))
+            {
+                (sender as MenuItem).IsChecked = true;
+                return;
+            }
+
+            Analyzer = new PythonAnalyzer();
+            CurrentLanguage = Structures.Language.Python;
+            TextEditor.SyntaxHighlighting = HighlightingDictionary["Python"];
+        }
+        #endregion
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {

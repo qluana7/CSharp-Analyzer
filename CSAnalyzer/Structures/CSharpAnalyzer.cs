@@ -1,18 +1,21 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Scripting;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace CSAnalyzer
+namespace CSAnalyzer.Structures
 {
-    public class Analyzer
+    public class CSharpAnalyzer : IAnaylzer
     {
         public Editor Main { get; }
 
-        public Analyzer(Editor editor)
+        public CSharpAnalyzer(Editor editor)
         {
             Main = editor;
         }
@@ -29,8 +32,9 @@ namespace CSAnalyzer
                 "System.Diagnostics"
             };
 
-        public async Task EvalCS(string cs)
+        public async Task<AnaylzeResult> Evaluate(string cs)
         {
+            cs = GetImports(cs);
             try
             {
                 var globals = new Variables(Main);
@@ -44,24 +48,21 @@ namespace CSAnalyzer
                 var result = await script.RunAsync(globals).ConfigureAwait(false);
 
                 if (result != null && result.ReturnValue != null && !string.IsNullOrWhiteSpace(result.ReturnValue.ToString()))
-                    Main.ResultTextBox.Text = result.ReturnValue.ToString();
+                    return new AnaylzeResult(result.ReturnValue.ToString(), false);
                 else
-                    Main.ResultTextBox.Text = "No result was returned.";
-
-                Main.StatusTextBlock.Text = "Status: Success";
-                Main.AnalyzerTab.SelectedIndex = 1;
+                    return new AnaylzeResult("No result was returned.", false);
             }
             catch (Exception ex)
             {
-                Main.ResultTextBox.Text = string.Concat(ex.GetType().ToString(), ex.Message);
-                Main.StatusTextBlock.Text = "Status: Error";
-                Main.AnalyzerTab.SelectedIndex = 1;
+                return new AnaylzeResult(string.Concat(ex.GetType().ToString(), ex.Message), true);
             }
         }
 
-        public void Compile(string cs)
+        public AnaylzeResult Compile(string cs)
         {
-             var globals = new Variables(Main);
+            cs = GetImports(cs);
+
+            var globals = new Variables(Main);
 
             var sopts = ScriptOptions.Default;
             sopts = sopts.WithImports(ImportsList);
@@ -70,19 +71,29 @@ namespace CSAnalyzer
             var script = CSharpScript.Create(cs, sopts, typeof(Variables));
             var c = script.Compile();
 
-            if (c.Length > 0)
-            {
-                var builder = new StringBuilder();
-                for (int i = 0; i < c.Length; i++)
-                    builder.AppendLine(c[i].ToString());
 
-                Main.CompileTextBox.Text = builder.ToString();
-                Main.StatusTextBlock.Text = "Status: Error";
-            }
+            var builder = new StringBuilder();
+            for (int i = 0; i < c.Length; i++)
+                builder.AppendLine(c[i].ToString());
+
+            if (c.Any(l => l.Severity == DiagnosticSeverity.Error))
+                return new AnaylzeResult(builder.ToString(), true);
             else
-                Main.StatusTextBlock.Text = "Status: Success";
+                return new AnaylzeResult(builder.ToString(), false);
+        }
 
-            Main.AnalyzerTab.SelectedIndex = 0;
+        private static string GetImports(string cs)
+        {
+            var matches = Regex.Matches(cs, @"\#include\s\<[\w\-_\:\/]+\.csi\>");
+
+            for (int i = 0; i < matches.Count; i++)
+            {
+                var s = matches[i].Value[10..^1];
+
+                cs = cs.Replace(matches[i].Value, File.ReadAllText(s));
+            }
+
+            return cs;
         }
 
         public class Variables

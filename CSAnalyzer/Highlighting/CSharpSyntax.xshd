@@ -41,7 +41,7 @@
         <Span begin="\{\{" end=""/>
         <Span begin="{" end="}" foreground="White" ruleSet=""/>
       </RuleSet>
-    </Span>
+    </Span>   
 
     <Rule>
       @[\w\d_]+

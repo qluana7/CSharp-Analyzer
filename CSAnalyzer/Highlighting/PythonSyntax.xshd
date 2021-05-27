@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SyntaxDefinition name="PY"
+                  xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" foreground="Green" />
+  <Color name="String" foreground="#d69d85"/>
+  <Color name="Char" foreground="#d69d85"/>
+  <Color name="Reserved" foreground="#ba7832" fontWeight="bold"/>
+
+  <RuleSet>
+    <Span color="Comment" begin="#" />
+    <Span color="Comment" multiline="true">
+      <Begin>"""</Begin>
+      <End>"""</End>
+    </Span>
+
+    <Span color="String">
+      <Begin>"</Begin>
+      <End>"</End>
+      <RuleSet>
+        <Span begin="\\" end="." />
+      </RuleSet>
+    </Span>
+
+    <Span color="Char">
+      <Begin>'</Begin>
+      <End>'</End>
+      <RuleSet>
+        <Span begin="\\" end="."/>
+      </RuleSet>
+    </Span>
+
+    <Rule foreground="LightGreen">
+      \b0[xX][0-9a-fA-F_]+
+      |   \b0[bB][0-9_]+
+      |   \b
+      ( \d+(\.[0-9]+)?
+      | \.[0-9]+
+      )
+      ([eE][+-]?[0-9]+)?
+    </Rule>
+
+    <Keywords color="Reserved">
+      <Word>and</Word>
+      <Word>exec</Word>
+      <Word>not</Word>
+      <Word>assert</Word>
+      <Word>finally</Word>
+      <Word>or</Word>
+      <Word>break</Word>
+      <Word>for</Word>
+      <Word>pass</Word>
+      <Word>class</Word>
+      <Word>from</Word>
+      <Word>print</Word>
+      <Word>continue</Word>
+      <Word>global</Word>
+      <Word>raise</Word>
+      <Word>def</Word>
+      <Word>if</Word>
+      <Word>return</Word>
+      <Word>del</Word>
+      <Word>import</Word>
+      <Word>try</Word>
+      <Word>elif</Word>
+      <Word>in</Word>
+      <Word>while</Word>
+      <Word>else</Word>
+      <Word>is</Word>
+      <Word>with</Word>
+      <Word>except</Word>
+      <Word>lambda</Word>
+      <Word>yield</Word>
+    </Keywords>
+  </RuleSet>
+</SyntaxDefinition>

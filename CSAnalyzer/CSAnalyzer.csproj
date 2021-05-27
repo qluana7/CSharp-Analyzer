@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.1.1" />
+    <PackageReference Include="IronPython" Version="2.7.11" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.9.0" />
   </ItemGroup>
 
@@ -65,7 +66,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Highlighting\SyntaxHighlighting.xshd">
+    <None Update="csc.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Highlighting\CSharpSyntax.xshd">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Highlighting\PythonSyntax.xshd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
