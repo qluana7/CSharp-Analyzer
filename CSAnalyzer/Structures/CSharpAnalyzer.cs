@@ -84,7 +84,7 @@ namespace CSAnalyzer.Structures
 
         private static string GetImports(string cs)
         {
-            var matches = Regex.Matches(cs, @"\#include\s\<[\w\-_\:\/]+\.csi\>");
+            var matches = Regex.Matches(cs, @"\#include\s\<[\w\-_\:\/\.]+\>");
 
             for (int i = 0; i < matches.Count; i++)
             {
