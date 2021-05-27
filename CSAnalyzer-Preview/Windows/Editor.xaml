@@ -218,6 +218,13 @@
                           x:Name="MenuFileSave"/>
                 <MenuItem Header="SaveAs" Click="FileSaveAs_Click" InputGestureText="Ctrl+Shift+S"
                           x:Name="MenuFileSaveAs"/>
+                <MenuItem Header="Export" Click="FileExport_Click" InputGestureText="Ctrl+E"
+                          x:Name="MenuFileExport" IsEnabled="False"/>
+                <Separator />
+                <!--
+                <MenuItem Header="Properties" Click="FileProperties_Click" InputGestureText="Ctrl+P"/>
+                <Separator />
+                -->
                 <MenuItem Header="Recent" x:Name="MenuFileRecent">
                     <MenuItem Header="No Recent" IsEnabled="False" x:Name="NoRecentMenuItem"/>
                 </MenuItem>
@@ -251,6 +258,16 @@
                 <MenuItem Header="Run" Click="RunRun_Click" InputGestureText="Ctrl+B"/>
                 <MenuItem Header="Save and Run" Click="RunSaveAndRun_Click" InputGestureText="Ctrl+Shift+B"/>
                 <MenuItem Header="SaveAs and Run" Click="RunSaveAsAndRun_Click" InputGestureText="Ctrl+Alt+B"/>
+            </MenuItem>
+            <MenuItem x:Name="MenuLanguage">
+                <MenuItem.Header>
+                    <TextBlock Text="Language" VerticalAlignment="Center" Foreground="White"
+                               HorizontalAlignment="Center" Padding="2,0"/>
+                </MenuItem.Header>
+                <MenuItem Header="C#" Click="LanguageCSharp_Click" IsCheckable="True" IsChecked="True"
+                          mex:MenuItemExtensions.GroupName="Lang" x:Uid="CSharp"/>
+                <MenuItem Header="Python" Click="LanguagePython_Click" IsCheckable="True"
+                          mex:MenuItemExtensions.GroupName="Lang" x:Uid="Python"/>
             </MenuItem>
         </Menu>
 

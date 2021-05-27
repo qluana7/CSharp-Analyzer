@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SyntaxDefinition name="CS"
+                  xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" foreground="Green" />
+  <Color name="String" foreground="#d69d85"/>
+  <Color name="Char" foreground="#d69d85"/>
+
+  <RuleSet>
+    <Span color="Comment" begin="//" />
+    <Span color="Comment" multiline="true" begin="/\*" end="\*/" />
+
+    <Span color="String">
+      <Begin>"</Begin>
+      <End>"</End>
+      <RuleSet>
+        <Span begin="\\" end="." />
+      </RuleSet>
+    </Span>
+
+    <Span color="Char">
+      <Begin>'</Begin>
+      <End>'</End>
+      <RuleSet>
+        <Span begin="\\" end="."/>
+      </RuleSet>
+    </Span>
+
+    <Span color="String" multiline="true">
+      <Begin>@"</Begin>
+      <End>"</End>
+      <RuleSet>
+        <Span foreground="#ffd68f" begin='""' end=""/>
+      </RuleSet>
+    </Span>
+
+    <Span color="String">
+      <Begin>\$"</Begin>
+      <End>"</End>
+      <RuleSet>
+        <Span begin="\\" end="."/>
+        <Span begin="\{\{" end=""/>
+        <Span begin="{" end="}" foreground="White" ruleSet=""/>
+      </RuleSet>
+    </Span>   
+
+    <Rule>
+      @[\w\d_]+
+    </Rule>
+
+    <Keywords fontWeight="bold" foreground="#569CD6">
+      <!--Data type-->
+      <Word>byte</Word>
+      <Word>sbyte</Word>
+      <Word>short</Word>
+      <Word>ushort</Word>
+      <Word>int</Word>
+      <Word>uint</Word>
+      <Word>long</Word>
+      <Word>ulong</Word>
+      <Word>float</Word>
+      <Word>double</Word>
+      <Word>decimal</Word>
+      <Word>char</Word>
+      <Word>string</Word>
+      <Word>bool</Word>
+      <Word>void</Word>
+      <Word>object</Word>
+      <!--Qualifier and Specifier-->
+      <Word>public</Word>
+      <Word>protected</Word>
+      <Word>private</Word>
+      <Word>internal</Word>
+      <Word>static</Word>
+      <Word>abstract</Word>
+      <Word>virtual</Word>
+      <Word>partial</Word>
+      <Word>extern</Word>
+      <Word>sealed</Word>
+      <Word>readonly</Word>
+      <Word>fixed</Word>
+      <Word>implicit</Word>
+      <Word>explicit</Word>
+      <Word>override</Word>
+      <Word>operator</Word>
+      <Word>class</Word>
+      <Word>interface</Word>
+      <Word>namespace</Word>
+      <Word>struct</Word>
+      <Word>event</Word>
+      <Word>enum</Word>
+      <Word>delegate</Word>
+      <Word>const</Word>
+      <!--Other-->
+      <Word>return</Word>
+      <Word>as</Word>
+      <Word>is</Word>
+      <Word>base</Word>
+      <Word>this</Word>
+      <Word>checked</Word>
+      <Word>unchecked</Word>
+      <Word>lock</Word>
+      <Word>unsafe</Word>
+      <Word>volatile</Word>
+      <Word>default</Word>
+      <Word>false</Word>
+      <Word>true</Word>
+      <Word>in</Word>
+      <Word>out</Word>
+      <Word>ref</Word>
+      <Word>new</Word>
+      <Word>null</Word>
+      <Word>params</Word>
+      <Word>sizeof</Word>
+      <Word>typeof</Word>
+      <Word>stackalloc</Word>
+      <Word>using</Word>
+      <!--Context Keywords-->
+      <Word>add</Word>
+      <Word>and</Word>
+      <Word>alias</Word>
+      <Word>ascending</Word>
+      <Word>async</Word>
+      <Word>await</Word>
+      <Word>by</Word>
+      <Word>descending</Word>
+      <Word>dynamic</Word>
+      <Word>equals</Word>
+      <Word>from</Word>
+      <Word>get</Word>
+      <Word>global</Word>
+      <Word>group</Word>
+      <Word>init</Word>
+      <Word>into</Word>
+      <Word>join</Word>
+      <Word>let</Word>
+      <Word>nameof</Word>
+      <Word>nint</Word>
+      <Word>not</Word>
+      <Word>notnull</Word>
+      <Word>nuint</Word>
+      <Word>on</Word>
+      <Word>or</Word>
+      <Word>orderby</Word>
+      <Word>record</Word>
+      <Word>remove</Word>
+      <Word>select</Word>
+      <Word>set</Word>
+      <Word>value</Word>
+      <Word>var</Word>
+      <Word>when</Word>
+      <Word>where</Word>
+      <Word>yield</Word>
+    </Keywords>
+
+    <Keywords fontWeight="bold" foreground="#d8a0df">
+      <!--Condition and Iteration-->
+      <Word>if</Word>
+      <Word>else</Word>
+      <Word>switch</Word>
+      <Word>break</Word>
+      <Word>continue</Word>
+      <Word>case</Word>
+      <Word>goto</Word>
+      <Word>try</Word>
+      <Word>catch</Word>
+      <Word>finally</Word>
+      <Word>for</Word>
+      <Word>do</Word>
+      <Word>while</Word>
+      <Word>foreach</Word>
+    </Keywords>
+
+    <Rule foreground="LightGreen">
+          \b0[xX][0-9a-fA-F_]+
+      |   \b0[bB][0-9_]+
+      |   \b
+        ( \d+(\.[0-9]+)?
+        | \.[0-9]+
+        )
+        ([eE][+-]?[0-9]+)?
+    </Rule>
+
+    <Rule foreground="#dcdcaa">
+      \b[\w\d_]+(?=\s*\()
+    </Rule>
+  </RuleSet>
+</SyntaxDefinition>

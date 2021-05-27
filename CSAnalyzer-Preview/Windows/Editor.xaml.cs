@@ -107,7 +107,8 @@ namespace CSAnalyzer
 
             string[] syntaxs =
             {
-                "CSharp"
+                "CSharp",
+                "Python"
             };
 
             for (int i = 0; i < syntaxs.Length; i++)
@@ -130,6 +131,37 @@ namespace CSAnalyzer
             //TextEditor.TextArea.TextEntered += TextArea_TextEntered;
 
             ChangeStatus(Status.Ready);
+        }
+
+        CompletionWindow completionWindow; 
+
+        private void TextArea_TextEntered(object sender, TextCompositionEventArgs e)
+        {
+            if (e.Text == ".")
+            {
+                completionWindow = new CompletionWindow(TextEditor.TextArea);
+                IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
+
+                var d = new CompletionDatas();
+                d.GetCurrentAssemblyCompletion();
+
+                for (int i = 0; i < d.CompletionDataDictionary.Count; i++)
+                {
+                    var item = d.CompletionDataDictionary.ElementAt(i).Value;
+
+                    data.Add(new CSCompletionData(item.Name));
+                }
+
+                completionWindow.Show();
+                completionWindow.Closed += (sender, _) => completionWindow = null;
+            }
+        }
+
+        private void TextArea_TextEntering(object sender, TextCompositionEventArgs e)
+        {
+            if (e.Text.Length > 0 && completionWindow != null)
+                if (!char.IsLetterOrDigit(e.Text[0]))
+                    completionWindow.CompletionList.RequestInsertion(e);
         }
 
         public void ChangeStatus(Status sta, string str = null)
@@ -182,6 +214,11 @@ namespace CSAnalyzer
                 }
                 else if (e.Key == Key.W)
                     FileClose_Click(null, null);
+                else if (e.Key == Key.P)
+                {
+                    if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
+                        FileProperties_Click(null, null);
+                }
                 else if (e.Key == Key.X)
                     FileExit_Click(null, null);
                 #endregion
@@ -276,7 +313,7 @@ namespace CSAnalyzer
             int cursorPosition = TextEditor.SelectionStart;
             int nextSpace = TextEditor.Text.IndexOf(' ', cursorPosition);
             int selectionStart = 0;
-            string trimmedString;
+            string trimmedString = string.Empty;
             if (nextSpace != -1)
             {
                 trimmedString = TextEditor.Text.Substring(0, nextSpace);
@@ -330,6 +367,7 @@ namespace CSAnalyzer
                 MenuFileSave,
                 MenuFileSaveAs,
                 MenuFileClose,
+                //MenuFileExport,
                 ToolSaveButton,
                 ToolSaveAsButton,
                 ToolBuildButton,
@@ -486,6 +524,40 @@ namespace CSAnalyzer
             }
         }
 
+        private void FileExport_Click(object sender, RoutedEventArgs e)
+        {
+            string pattern = Regex.Escape(@"^static void Main()*{*}").Replace(@"\*", ".*");
+            var match = Regex.Match(TextEditor.Text
+                .Replace(" ", string.Empty).Replace("\r", "")
+                .Replace("\n", ""), pattern);
+            string code;
+            if (!match.Success)
+            {
+                MessageBox.Show("There's no Main function.");
+                return;
+            }
+
+            code = match.Value;
+
+            string input = Microsoft.VisualBasic.Interaction
+                .InputBox("Input program name", "Export",
+                System.IO.Path.GetFileNameWithoutExtension(CurrentFile));
+
+            if (input == null)
+                return;
+
+            System.IO.File.WriteAllText(input, code);
+
+            var proc = Process.Start("csc.exe", input);
+            proc.WaitForExit();
+            MessageBox.Show("Success");
+        }
+
+        private void FileProperties_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private async void FileExit_Click(object sender, RoutedEventArgs e)
         {
             if (!await CheckSave())
@@ -603,6 +675,32 @@ namespace CSAnalyzer
         {
             FileSaveAs_Click(null, null);
             RunRun_Click(null, null);
+        }
+
+        private void LanguageCSharp_Click(object sender, RoutedEventArgs e)
+        {
+            if (!MenuLanguage.Items.Cast<MenuItem>().Any(l => l.IsChecked))
+            {
+                (sender as MenuItem).IsChecked = true;
+                return;
+            }
+
+            Analyzer = new CSharpAnalyzer(this);
+            CurrentLanguage = Structures.Language.CSharp;
+            TextEditor.SyntaxHighlighting = HighlightingDictionary["CSharp"];
+        }
+
+        private void LanguagePython_Click(object sender, RoutedEventArgs e)
+        {
+            if (!MenuLanguage.Items.Cast<MenuItem>().Any(l => l.IsChecked))
+            {
+                (sender as MenuItem).IsChecked = true;
+                return;
+            }
+
+            Analyzer = new PythonAnalyzer();
+            CurrentLanguage = Structures.Language.Python;
+            TextEditor.SyntaxHighlighting = HighlightingDictionary["Python"];
         }
         #endregion
 
