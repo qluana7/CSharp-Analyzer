@@ -23,6 +23,7 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using ICSharpCode.AvalonEdit.Search;
 using CSAnalyzer.Structures;
+using CSAnalyzer_Preview.Dialog;
 
 namespace CSAnalyzer
 {
@@ -39,6 +40,9 @@ namespace CSAnalyzer
 
         public string CurrentFile { get; set; }
         public Language CurrentLanguage { get; set; }
+
+        public string LocalPath => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+                                        + @"\CSAnaylzer";
 
         public Dictionary<string, IHighlightingDefinition> HighlightingDictionary { get; set; }
 
@@ -70,17 +74,30 @@ namespace CSAnalyzer
 
         public Editor()
         {
+            
+
             InitializeComponent();
+
+            EventHandling();
 
             Init();
         }
 
-        private void Init()
+        private void CheckError()
         {
-            Analyzer = new CSharpAnalyzer(this);
-            RecentDictionary = new Dictionary<string, string>();
-            HighlightingDictionary = new Dictionary<string, IHighlightingDefinition>();
+            if (System.IO.Directory.GetFiles(LocalPath + @"\tmp").Length == 0)
+                return;
 
+            var msg = new CustomMessageBox("Error", "Error was accrued last time.", "Ok", null, "Show");
+            msg.ShowDialog();
+
+            /* TODO: Finish custom messagebox creation.
+             * When button clicked set SelectedButton.
+             */
+        }
+
+        private void EventHandling()
+        {
             TextEditor.TextChanged += (sender, e) =>
             {
                 if (IsDispose)
@@ -92,13 +109,58 @@ namespace CSAnalyzer
                 IsEdited = true;
             };
 
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            /* 
+             * TODO: Make UnhandledException
+             * Write Exception info to file
+             * and after program run if exception has
+             * accrued show message box to check error(log)
+             */
+
+            static string GetDateTime()
+            {
+                var date = DateTime.Now;
+
+                var d = date.ToShortDateString().Replace("-", "");
+                var t = date.ToShortTimeString().Split(' ')[1].Replace(":", "");
+                return d + t;
+            }
+
+            var logpath = LocalPath + @"\tmp" + GetDateTime();
+
+            System.IO.File.Create(logpath).Close();
+
+            System.IO.File.WriteAllText(logpath, e.ToString());
+        }
+
+        private void Init()
+        {
+            string[] paths =
+            {
+                "log",
+                "tmp"
+            };
+
+            for (int i = 0; i < paths.Length; i++)
+            {
+                var path = LocalPath + @"\" + paths[i];
+                if (!System.IO.Directory.Exists(path))
+                    System.IO.Directory.CreateDirectory(path);
+            }
+
+            Analyzer = new CSharpAnalyzer(this);
+            RecentDictionary = new Dictionary<string, string>();
+            HighlightingDictionary = new Dictionary<string, IHighlightingDefinition>();
+
             CurrentFile = null;
             IsEdited = false;
             ToolUndoButton.IsEnabled = false;
             ToolRedoButton.IsEnabled = false;
             ChangeIsEnabled(false);
-
-            Console.OpenStandardInput();
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -264,7 +326,7 @@ namespace CSAnalyzer
                 "Save" => FileSave_Click,
                 "SaveAs" => FileSaveAs_Click,
                 "Run" => RunRun_Click,
-                _ => throw new InvalidOperationException()
+                _ => throw new InvalidOperationException("Unkown Tool Button Event")
             };
 
             func(null, null);
@@ -306,32 +368,6 @@ namespace CSAnalyzer
             TextEditor.Text = TextEditor.Text.Insert(TextEditor.CaretOffset, e.Text + s.Item1);
             e.Handled = true;
             TextEditor.CaretOffset = co + s.Item2 + 1;
-        }
-
-        private void SelectWord()
-        {
-            int cursorPosition = TextEditor.SelectionStart;
-            int nextSpace = TextEditor.Text.IndexOf(' ', cursorPosition);
-            int selectionStart = 0;
-            string trimmedString = string.Empty;
-            if (nextSpace != -1)
-            {
-                trimmedString = TextEditor.Text.Substring(0, nextSpace);
-            }
-            else
-            {
-                trimmedString = TextEditor.Text;
-            }
-
-
-            if (trimmedString.LastIndexOf(' ') != -1)
-            {
-                selectionStart = 1 + trimmedString.LastIndexOf(' ');
-                trimmedString = trimmedString.Substring(1 + trimmedString.LastIndexOf(' '));
-            }
-
-            TextEditor.SelectionStart = selectionStart;
-            TextEditor.SelectionLength = trimmedString.Length;
         }
 
         #region MenuStrip
@@ -440,7 +476,8 @@ namespace CSAnalyzer
             FileTextBox.Text = $@"unnamed.{CurrentLanguage switch
                 {
                     Structures.Language.CSharp => "cs",
-                    Structures.Language.Python => "py"
+                    Structures.Language.Python => "py",
+                    _ => throw new InvalidOperationException("Unkown Language.")
                 }
             }";
             TextEditor.Text = string.Empty;
@@ -526,6 +563,18 @@ namespace CSAnalyzer
 
         private void FileExport_Click(object sender, RoutedEventArgs e)
         {
+            /*
+             * TODO: Make Export System
+             * struct, class, interface, and enum -> namespace
+             * other codes -> namespace + class + Main() method
+             * namespace name = "CSharpExtract"
+             * main class name = Random Letters
+             * Split code with '\n' and find it
+             * use counter to check starts of '{'
+             * and ends of '}'
+             * last build with csc.exe - netframework 4.0
+             */
+
             string pattern = Regex.Escape(@"^static void Main()*{*}").Replace(@"\*", ".*");
             var match = Regex.Match(TextEditor.Text
                 .Replace(" ", string.Empty).Replace("\r", "")
@@ -555,6 +604,12 @@ namespace CSAnalyzer
 
         private void FileProperties_Click(object sender, RoutedEventArgs e)
         {
+            /*
+             * TODO: Make Properties Dialog
+             * It contains import lists.
+             * 
+             * + search how to add dll files.
+             */
 
         }
 

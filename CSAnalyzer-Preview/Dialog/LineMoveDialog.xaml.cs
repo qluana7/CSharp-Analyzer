@@ -47,7 +47,7 @@ namespace CSAnalyzer
             {
                 "Cancel" => false,
                 "Ok" => true,
-                _ => throw new InvalidOperationException()
+                _ => throw new InvalidOperationException("Dialog Button Error.")
             };
         }
 
