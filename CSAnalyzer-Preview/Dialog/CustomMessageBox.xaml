@@ -70,11 +70,11 @@
 
         <StackPanel Grid.Row="2" Margin="6" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Style="{StaticResource ButtonBase}" Width="50" Margin="5"
-                    x:Name="Button1" Visibility="Hidden"/>
+                    x:Name="Button1" Visibility="Hidden" Click="Button_Click"/>
             <Button Style="{StaticResource ButtonBase}" Width="50" Margin="5"
-                    x:Name="Button2" Visibility="Hidden"/>
+                    x:Name="Button2" Visibility="Hidden" Click="Button_Click"/>
             <Button Style="{StaticResource ButtonBase}" Width="50" Margin="5"
-                    x:Name="Button3" Visibility="Hidden"/>
+                    x:Name="Button3" Visibility="Hidden" Click="Button_Click"/>
         </StackPanel>
     </Grid>
 </Window>

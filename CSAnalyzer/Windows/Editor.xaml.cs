@@ -249,6 +249,11 @@ namespace CSAnalyzer
                 TextEditor.CaretOffset++;
                 return;
             }
+            else if (TextEditor.Text.Length >= TextEditor.CaretOffset + 1)
+            {
+                if (TextEditor.Text[TextEditor.CaretOffset] != ' ')
+                    return;
+            }
 
             TextEditor.SelectedText = string.Empty;
 

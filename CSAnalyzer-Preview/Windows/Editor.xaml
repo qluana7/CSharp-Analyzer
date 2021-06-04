@@ -221,10 +221,8 @@
                 <MenuItem Header="Export" Click="FileExport_Click" InputGestureText="Ctrl+E"
                           x:Name="MenuFileExport" IsEnabled="False"/>
                 <Separator />
-                <!--
                 <MenuItem Header="Properties" Click="FileProperties_Click" InputGestureText="Ctrl+P"/>
                 <Separator />
-                -->
                 <MenuItem Header="Recent" x:Name="MenuFileRecent">
                     <MenuItem Header="No Recent" IsEnabled="False" x:Name="NoRecentMenuItem"/>
                 </MenuItem>

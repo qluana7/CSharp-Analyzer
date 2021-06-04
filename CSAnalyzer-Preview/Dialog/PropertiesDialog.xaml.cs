@@ -17,6 +17,8 @@ namespace CSAnalyzer
     /// </summary>
     public partial class PropertiesDialog : Window
     {
+        public bool AOD { get; private set; }
+
         public PropertiesDialog()
         {
             InitializeComponent();
@@ -25,7 +27,7 @@ namespace CSAnalyzer
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
-                Close();
+                CancelButton_Click(null, null);
         }
 
         private void Exit_Click(object sender, RoutedEventArgs e)
@@ -37,6 +39,39 @@ namespace CSAnalyzer
         {
             if (e.ChangedButton == MouseButton.Left)
                 DragMove();
+        }
+
+        private void OkButton_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+            Close();
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
+        }
+
+        private void General_AodCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            AOD = true;
+        }
+
+        private void General_AodCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            AOD = false;
+        }
+
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var s = e.AddedItems[0].ToString();
+
+            var panel = s switch
+            {
+                "General" => GeneralStackPanel,
+                _ => throw new InvalidOperationException("Unknown ListBox Selection.")
+            };
         }
     }
 }

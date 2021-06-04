@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace CSAnalyzer_Preview.Dialog
 {
@@ -25,7 +15,9 @@ namespace CSAnalyzer_Preview.Dialog
         }
 
         public CustomMessageBox(string content) : this()
-            => ContentTextBlock.Text = content;
+        {
+            ContentTextBlock.Text = content;
+        }
 
         public CustomMessageBox(string content,
             string button1 = null, string button2 = null, string button3 = null) : this(content)
@@ -52,12 +44,11 @@ namespace CSAnalyzer_Preview.Dialog
         public CustomMessageBox(string caption, string content,
             string button1 = null, string button2 = null, string button3 = null)
             : this(content, button1, button2, button3)
-            => CaptionTextBox.Text = caption;
+        {
+            CaptionTextBox.Text = caption;
+        }
 
         public string SelectedButton { get; private set; } = null;
-
-        public bool IsEscaped { get; private set; } = false;
-        public bool IsEnterd { get; private set; } = false;
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
@@ -66,7 +57,6 @@ namespace CSAnalyzer_Preview.Dialog
             if (e.Key == Key.Enter)
             {
                 DialogResult = true;
-                IsEnterd = true;
                 Close();
             }
         }
@@ -74,7 +64,6 @@ namespace CSAnalyzer_Preview.Dialog
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
-            IsEscaped = true;
             Close();
         }
 
@@ -82,6 +71,12 @@ namespace CSAnalyzer_Preview.Dialog
         {
             if (e.ChangedButton == MouseButton.Left)
                 DragMove();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            SelectedButton = (sender as Button).Content.ToString();
+            Close();
         }
     }
 }

@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CSAnalyzer"
         mc:Ignorable="d"
-        Title="Properties" Height="450" Width="800"
-        WindowStyle="None" ResizeMode="NoResize"
+        Title="Properties" Height="340" Width="600"
+        WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
+        Background="#3F3F3F" KeyDown="Window_KeyDown"
         >
     <Window.Resources>
         <Style x:Key="ButtonBase" TargetType="Button" >
@@ -41,6 +42,16 @@
         <Style x:Key="TitleButton" TargetType="Button" BasedOn="{StaticResource ButtonBase}">
             <EventSetter Event="Click" Handler="Exit_Click"/>
         </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Margin" Value="0,3" />
+            <Setter Property="Foreground" Value="White" />
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="Gray"/>
+                    <Setter Property="ToolTip" Value="Not available now"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
         <BitmapImage x:Key="Exit" UriSource="/Resources/Exit.png" />
     </Window.Resources>
@@ -63,7 +74,129 @@
         </Grid>
 
         <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.6*"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+
+            <ListBox Grid.Column="0" Margin="20" Background="#1E1E1E" Foreground="White"
+                     SelectionMode="Single" SelectedIndex="0"
+                     SelectionChanged="ListBox_SelectionChanged">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="BorderThickness" Value="0" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="DodgerBlue" />
+                                <Setter Property="BorderThickness" Value="0" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBoxItem Content="General"/>
+                <ListBoxItem Content="Colors"/>
+                <ListBoxItem Content="Imports"/>
+            </ListBox>
             
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="2"
+                        HorizontalAlignment="Right">
+                <Button Margin="4,5" Width="50" Style="{StaticResource ButtonBase}" Content="Ok"
+                        x:Name="OkButton" Click="OkButton_Click"/>
+                <Button Margin="4,5" Width="50" Style="{StaticResource ButtonBase}" Content="Cancel"
+                        x:Name="CancelButton" Click="CancelButton_Click"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Grid.Row="0" Margin="20" x:Name="GeneralStackPanel"
+                        Orientation="Vertical" Visibility="Collapsed">
+                <GroupBox BorderThickness="0" IsEnabled="False">
+                    <GroupBox.Header>
+                        <TextBlock Foreground="Gray" Text="File" FontSize="10"/>
+                    </GroupBox.Header>
+                    <StackPanel VerticalAlignment="Top" Margin="5" Orientation="Vertical">
+                        <CheckBox Content="Regist open with .csi extension"
+                                  x:Name="General_CsiCheckBox"/>
+                        <CheckBox Content="Show context menu in explorer"
+                                  x:Name="General_ContextCheckBox" IsEnabled="False"/>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox BorderThickness="0">
+                    <GroupBox.Header>
+                        <TextBlock Foreground="Gray" Text="Windows Option" FontSize="10"/>
+                    </GroupBox.Header>
+                    <StackPanel VerticalAlignment="Top" Margin="5" Orientation="Vertical">
+                        <CheckBox Content="Always on top"
+                                  x:Name="General_AodCheckBox"
+                                  Checked="General_AodCheckBox_Checked"
+                                  Unchecked="General_AodCheckBox_Unchecked"/>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox BorderThickness="0">
+                    <GroupBox.Header>
+                        <TextBlock Foreground="Gray" Text="Log" FontSize="10"/>
+                    </GroupBox.Header>
+                    <StackPanel VerticalAlignment="Top" Margin="5" Orientation="Vertical">
+                        <TextBox IsReadOnly="True" Background="#1E1E1E" Foreground="White"
+                                 x:Name="General_LogTextBox" Margin="5"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Margin="4,5" MinWidth="50" Style="{StaticResource ButtonBase}"
+                                    Content="Clear Log"/>
+                            <Button Margin="4,5" MinWidth="50" Style="{StaticResource ButtonBase}"
+                                    Content="Open Log"/>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Grid.Row="0" Margin="20" x:Name="ColorsStackPanel"
+                        Orientation="Vertical" Visibility="Visible">
+                <GroupBox BorderThickness="0">
+                    <GroupBox.Header>
+                        <TextBlock Foreground="Gray" Text="Color Setting" FontSize="10"/>
+                    </GroupBox.Header>
+                    <StackPanel VerticalAlignment="Top" Margin="5" Orientation="Vertical">
+                        <DockPanel Margin="0,5">
+                            <TextBlock Text="Comment" Foreground="White" DockPanel.Dock="Left"
+                                       Width="230"/>
+                            <Rectangle x:Name="CommentRect" Height="20" Width="20" DockPanel.Dock="Right"
+                                       Fill="#607936"/>
+                            <TextBox Text="#607936" Background="#1E1E1E" Foreground="White"
+                                     DockPanel.Dock="Right" Width="55" BorderThickness="0"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,5">
+                            <TextBlock Text="String" Foreground="White" DockPanel.Dock="Left"
+                                       Width="230"/>
+                            <Rectangle x:Name="StringRect" Height="20" Width="20" DockPanel.Dock="Right"
+                                       Fill="#d69d85"/>
+                            <TextBox Text="#d69d85" Background="#1E1E1E" Foreground="White"
+                                     DockPanel.Dock="Right" Width="55" BorderThickness="0"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,5">
+                            <TextBlock Text="Char" Foreground="White" DockPanel.Dock="Left"
+                                       Width="230"/>
+                            <Rectangle x:Name="CharRect" Height="20" Width="20" DockPanel.Dock="Right"
+                                       Fill="#d69d85"/>
+                            <TextBox Text="#d69d85" Background="#1E1E1E" Foreground="White"
+                                     DockPanel.Dock="Right" Width="55" BorderThickness="0"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,5">
+                            <TextBlock Text="Escape Sequence" Foreground="White" DockPanel.Dock="Left"
+                                       Width="230"/>
+                            <Rectangle x:Name="EscapeRect" Height="20" Width="20" DockPanel.Dock="Right"
+                                       Fill="#d69d85"/>
+                            <TextBox Text="#d69d85" Background="#1E1E1E" Foreground="White"
+                                     DockPanel.Dock="Right" Width="55" BorderThickness="0"/>
+                        </DockPanel>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
         </Grid>
     </Grid>
 </Window>

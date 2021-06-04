@@ -1,9 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SyntaxDefinition name="CS"
                   xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
-  <Color name="Comment" foreground="Green" />
+  <Color name="Comment" foreground="#607936" />
   <Color name="String" foreground="#d69d85"/>
   <Color name="Char" foreground="#d69d85"/>
+  <Color name="Escape" foreground="#ffd68f"/>
+  <Color name="Keyword" foreground="#569CD6"/>
+  <Color name="Keyword_cond" foreground="#d8a0df"/>
+  <Color name="Number" foreground="#83CEA8"/>
+  <Color name="Method" foreground="#dcdcaa"/>
 
   <RuleSet>
     <Span color="Comment" begin="//" />
@@ -13,7 +18,7 @@
       <Begin>"</Begin>
       <End>"</End>
       <RuleSet>
-        <Span begin="\\" end="." />
+        <Span begin="\\" end="." color="Escape"/>
       </RuleSet>
     </Span>
 
@@ -29,7 +34,7 @@
       <Begin>@"</Begin>
       <End>"</End>
       <RuleSet>
-        <Span foreground="#ffd68f" begin='""' end=""/>
+        <Span color="Escape" begin='""' end=""/>
       </RuleSet>
     </Span>
 
@@ -47,7 +52,7 @@
       @[\w\d_]+
     </Rule>
 
-    <Keywords fontWeight="bold" foreground="#569CD6">
+    <Keywords fontWeight="bold" color="Keyword">
       <!--Data type-->
       <Word>byte</Word>
       <Word>sbyte</Word>
@@ -152,7 +157,7 @@
       <Word>yield</Word>
     </Keywords>
 
-    <Keywords fontWeight="bold" foreground="#d8a0df">
+    <Keywords fontWeight="bold" color="Keyword_cond">
       <!--Condition and Iteration-->
       <Word>if</Word>
       <Word>else</Word>
@@ -170,7 +175,7 @@
       <Word>foreach</Word>
     </Keywords>
 
-    <Rule foreground="LightGreen">
+    <Rule color="Number">
           \b0[xX][0-9a-fA-F_]+
       |   \b0[bB][0-9_]+
       |   \b
@@ -180,7 +185,7 @@
         ([eE][+-]?[0-9]+)?
     </Rule>
 
-    <Rule foreground="#dcdcaa">
+    <Rule color="Method">
       \b[\w\d_]+(?=\s*\()
     </Rule>
   </RuleSet>

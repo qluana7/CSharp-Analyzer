@@ -74,26 +74,56 @@ namespace CSAnalyzer
 
         public Editor()
         {
-            
+            CheckError();
 
             InitializeComponent();
 
             EventHandling();
 
             Init();
+
+            RunOptions();
+        }
+
+        private async void RunOptions()
+        {
+            /* Attributes Arguments
+             * --open <path>    : open file
+             */
+            var args = Environment.GetCommandLineArgs()[1..];
+
+            if (args.Contains("--open"))
+            {
+                var i = Array.IndexOf(args, "--open");
+
+                if (args.Length == i + 1)
+                    Console.WriteLine("Wrong attribute usage. Usage: --open <path>");
+
+                else
+                {
+                    await OpenFile(args[i + 1]);
+                }
+            }
         }
 
         private void CheckError()
         {
-            if (System.IO.Directory.GetFiles(LocalPath + @"\tmp").Length == 0)
+            var files = System.IO.Directory.GetFiles(LocalPath + @"\tmp");
+
+            if (files.Length == 0)
                 return;
 
-            var msg = new CustomMessageBox("Error", "Error was accrued last time.", "Ok", null, "Show");
-            msg.ShowDialog();
+            var msg = new CustomMessageBox("Error", "Error was accrued last time.", null, "Ok", "Show");
+            var b = msg.ShowDialog();
+            if (b.HasValue)
+                if (b.Value && msg.SelectedButton == "Show")
+                {
+                    Process.Start(files.First());
+                }
 
-            /* TODO: Finish custom messagebox creation.
-             * When button clicked set SelectedButton.
-             */
+            for (int i = 0; i < files.Length; i++)
+                System.IO.File.Move(files[i],
+                    LocalPath + @"\log\" + System.IO.Path.GetFileName(files[i]) );
         }
 
         private void EventHandling()
@@ -114,13 +144,6 @@ namespace CSAnalyzer
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            /* 
-             * TODO: Make UnhandledException
-             * Write Exception info to file
-             * and after program run if exception has
-             * accrued show message box to check error(log)
-             */
-
             static string GetDateTime()
             {
                 var date = DateTime.Now;
@@ -348,6 +371,11 @@ namespace CSAnalyzer
                 TextEditor.CaretOffset++;
                 return;
             }
+            else if (TextEditor.Text.Length >= TextEditor.CaretOffset + 1)
+            {
+                if (TextEditor.Text[TextEditor.CaretOffset] != ' ')
+                    return;
+            }
 
             TextEditor.SelectedText = string.Empty;
 
@@ -502,20 +530,25 @@ namespace CSAnalyzer
 
             if (open.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                IsDispose = true;
-                var t = await System.IO.File.ReadAllTextAsync(open.FileName);
-                FileTextBox.Text = System.IO.Path.GetFileName(open.FileName);
-                TextEditor.Text = t;
-                CurrentFile = open.FileName;
-                EditGrid.Visibility = Visibility.Visible;
-                ChangeIsEnabled(true);
-
-                RecordRecent(open.FileName);
-
-                IsDispose = false;
+                await OpenFile(open.FileName);
             }
 
             ChangeStatus(Status.Ready);
+        }
+
+        private async Task OpenFile(string fname)
+        {
+            IsDispose = true;
+            var t = await System.IO.File.ReadAllTextAsync(fname);
+            FileTextBox.Text = System.IO.Path.GetFileName(fname);
+            TextEditor.Text = t;
+            CurrentFile = fname;
+            EditGrid.Visibility = Visibility.Visible;
+            ChangeIsEnabled(true);
+
+            RecordRecent(fname);
+
+            IsDispose = false;
         }
 
         private async void FileClose_Click(object sender, RoutedEventArgs e)
@@ -611,6 +644,9 @@ namespace CSAnalyzer
              * + search how to add dll files.
              */
 
+            var prop = new PropertiesDialog();
+
+            prop.ShowDialog();
         }
 
         private async void FileExit_Click(object sender, RoutedEventArgs e)
