@@ -44,9 +44,9 @@ C# Version : 9.0 (It depend on Project's Language Version. Please check version 
   
 C# 버전 : 9.0 (버전은 프로젝트의 언어 버전에 의존합니다. [csproj](https://github.com/Lukince/CSharp-Analyzer/blob/master/CSAnalyzer/CSAnalyzer.csproj)에서 확인하세요)
 
-Latest Version : 1.0.0
+Latest Version : 1.0.2 (1.1.0 Preview 1)
   
-최신 버전 : 1.0.0
+최신 버전 : 1.0.2 (1.1.0 Preview 1)
 
 # Image
 
