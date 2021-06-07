@@ -92,6 +92,8 @@ namespace CSAnalyzer
                 IsEdited = true;
             };
 
+            TextEditor.TextArea.Caret.PositionChanged += TextEditor_PositionChanged;
+
             CurrentFile = null;
             IsEdited = false;
             ToolUndoButton.IsEnabled = false;
@@ -130,6 +132,13 @@ namespace CSAnalyzer
             //TextEditor.TextArea.TextEntered += TextArea_TextEntered;
 
             ChangeStatus(Status.Ready);
+        }
+
+        private void TextEditor_PositionChanged(object sender, EventArgs e)
+        {
+            var offset = TextEditor.TextArea.Caret.Position;
+            LineTextBlock.Text = "Ln: " + offset.Line;
+            ColumnTextBlock.Text = "Co: " + offset.Column;
         }
 
         public void ChangeStatus(Status sta, string str = null)
@@ -276,32 +285,6 @@ namespace CSAnalyzer
             TextEditor.CaretOffset = co + s.Item2 + 1;
         }
 
-        private void SelectWord()
-        {
-            int cursorPosition = TextEditor.SelectionStart;
-            int nextSpace = TextEditor.Text.IndexOf(' ', cursorPosition);
-            int selectionStart = 0;
-            string trimmedString;
-            if (nextSpace != -1)
-            {
-                trimmedString = TextEditor.Text.Substring(0, nextSpace);
-            }
-            else
-            {
-                trimmedString = TextEditor.Text;
-            }
-
-
-            if (trimmedString.LastIndexOf(' ') != -1)
-            {
-                selectionStart = 1 + trimmedString.LastIndexOf(' ');
-                trimmedString = trimmedString.Substring(1 + trimmedString.LastIndexOf(' '));
-            }
-
-            TextEditor.SelectionStart = selectionStart;
-            TextEditor.SelectionLength = trimmedString.Length;
-        }
-
         #region MenuStrip
         private async Task<bool> CheckSave()
         {
@@ -344,6 +327,15 @@ namespace CSAnalyzer
 
             for (int i = 0; i < controls.Length; i++)
                 controls[i].IsEnabled = b;
+
+            FrameworkElement[] vcontrols =
+            {
+                LineTextBlock,
+                ColumnTextBlock
+            };
+
+            for (int j = 0; j < vcontrols.Length; j++)
+                vcontrols[j].Visibility = b ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void RecordRecent(string path)

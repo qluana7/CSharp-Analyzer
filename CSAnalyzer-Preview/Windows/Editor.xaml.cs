@@ -139,6 +139,8 @@ namespace CSAnalyzer
                 IsEdited = true;
             };
 
+            TextEditor.TextArea.Caret.PositionChanged += TextEditor_PositionChanged;
+
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
         }
 
@@ -247,6 +249,13 @@ namespace CSAnalyzer
             if (e.Text.Length > 0 && completionWindow != null)
                 if (!char.IsLetterOrDigit(e.Text[0]))
                     completionWindow.CompletionList.RequestInsertion(e);
+        }
+
+        private void TextEditor_PositionChanged(object sender, EventArgs e)
+        {
+            var offset = TextEditor.TextArea.Caret.Position;
+            LineTextBlock.Text = "Ln: " + offset.Line;
+            ColumnTextBlock.Text = "Co: " + offset.Column;
         }
 
         public void ChangeStatus(Status sta, string str = null)
@@ -441,6 +450,15 @@ namespace CSAnalyzer
 
             for (int i = 0; i < controls.Length; i++)
                 controls[i].IsEnabled = b;
+
+            FrameworkElement[] vcontrols =
+            {
+                LineTextBlock,
+                ColumnTextBlock
+            };
+
+            for (int j = 0; j < vcontrols.Length; j++)
+                vcontrols[j].Visibility = b ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void RecordRecent(string path)
