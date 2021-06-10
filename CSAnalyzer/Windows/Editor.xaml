@@ -337,7 +337,8 @@
                     <TextBox x:Name="CompileTextBox" Background="#1E1E1E"
                          Foreground="White" BorderThickness="0"
                              IsReadOnly="True" Focusable="False"
-                             VerticalScrollBarVisibility="Auto">
+                             VerticalScrollBarVisibility="Auto"
+                             TextWrapping="Wrap">
                         <TextBox.Resources>
                             <Style x:Key="ScrollThumb" TargetType="{x:Type Thumb}">
                                 <Setter Property="Template">
@@ -426,7 +427,8 @@
                     <TextBox x:Name="ResultTextBox" Background="#1E1E1E"
                              Foreground="White" BorderThickness="0"
                              IsReadOnly="True" Focusable="False"
-                             VerticalScrollBarVisibility="Auto"/>
+                             VerticalScrollBarVisibility="Auto"
+                             TextWrapping="Wrap"/>
                     <TabItem.Header>
                         <TextBlock Text="Output" Foreground="White"
                                Margin="2,0" HorizontalAlignment="Center"/>
