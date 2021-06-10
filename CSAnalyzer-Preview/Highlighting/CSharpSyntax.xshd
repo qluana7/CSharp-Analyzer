@@ -5,14 +5,25 @@
   <Color name="String" foreground="#d69d85"/>
   <Color name="Char" foreground="#d69d85"/>
   <Color name="Escape" foreground="#ffd68f"/>
-  <Color name="Keyword" foreground="#569CD6"/>
+  <Color name="Keyword" foreground="#569cd6"/>
   <Color name="Keyword_cond" foreground="#d8a0df"/>
-  <Color name="Number" foreground="#83CEA8"/>
+  <Color name="Number" foreground="#83cea8"/>
   <Color name="Method" foreground="#dcdcaa"/>
 
   <RuleSet>
     <Span color="Comment" begin="//" />
     <Span color="Comment" multiline="true" begin="/\*" end="\*/" />
+
+    <Span color="Keyword">
+      <Begin>\#include</Begin>
+      <RuleSet>
+        <Span begin="\s" foreground="White">
+          <RuleSet>
+            <Span begin="&lt;" end="&gt;" color="Escape"/>
+          </RuleSet>
+        </Span>
+      </RuleSet>
+    </Span>
 
     <Span color="String">
       <Begin>"</Begin>

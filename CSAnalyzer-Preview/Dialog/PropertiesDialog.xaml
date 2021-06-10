@@ -52,6 +52,12 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <Style x:Key="ColorRect" TargetType="Rectangle">
+            <Setter Property="Width" Value="20"/>
+            <Setter Property="Width" Value="20"/>
+            <Setter Property="DockPanel.Dock" Value="Right"/>
+            <EventSetter Event="MouseDown" Handler="Rectangle_MouseDown" />
+        </Style>
 
         <BitmapImage x:Key="Exit" UriSource="/Resources/Exit.png" />
     </Window.Resources>
@@ -165,7 +171,7 @@
                         <DockPanel Margin="0,5">
                             <TextBlock Text="Comment" Foreground="White" DockPanel.Dock="Left"
                                        Width="230"/>
-                            <Rectangle x:Name="CommentRect" Height="20" Width="20" DockPanel.Dock="Right"
+                            <Rectangle x:Name="CommentRect" Style="{StaticResource ColorRect}"
                                        Fill="#607936"/>
                             <TextBox Text="#607936" Background="#1E1E1E" Foreground="White"
                                      DockPanel.Dock="Right" Width="55" BorderThickness="0"/>
@@ -173,7 +179,7 @@
                         <DockPanel Margin="0,5">
                             <TextBlock Text="String" Foreground="White" DockPanel.Dock="Left"
                                        Width="230"/>
-                            <Rectangle x:Name="StringRect" Height="20" Width="20" DockPanel.Dock="Right"
+                            <Rectangle x:Name="StringRect" Style="{StaticResource ColorRect}"
                                        Fill="#d69d85"/>
                             <TextBox Text="#d69d85" Background="#1E1E1E" Foreground="White"
                                      DockPanel.Dock="Right" Width="55" BorderThickness="0"/>
@@ -181,7 +187,7 @@
                         <DockPanel Margin="0,5">
                             <TextBlock Text="Char" Foreground="White" DockPanel.Dock="Left"
                                        Width="230"/>
-                            <Rectangle x:Name="CharRect" Height="20" Width="20" DockPanel.Dock="Right"
+                            <Rectangle x:Name="CharRect" Style="{StaticResource ColorRect}"
                                        Fill="#d69d85"/>
                             <TextBox Text="#d69d85" Background="#1E1E1E" Foreground="White"
                                      DockPanel.Dock="Right" Width="55" BorderThickness="0"/>
@@ -189,9 +195,41 @@
                         <DockPanel Margin="0,5">
                             <TextBlock Text="Escape Sequence" Foreground="White" DockPanel.Dock="Left"
                                        Width="230"/>
-                            <Rectangle x:Name="EscapeRect" Height="20" Width="20" DockPanel.Dock="Right"
-                                       Fill="#d69d85"/>
-                            <TextBox Text="#d69d85" Background="#1E1E1E" Foreground="White"
+                            <Rectangle x:Name="EscapeRect" Style="{StaticResource ColorRect}"
+                                       Fill="#ffd68f"/>
+                            <TextBox Text="#ffd68f" Background="#1E1E1E" Foreground="White"
+                                     DockPanel.Dock="Right" Width="55" BorderThickness="0"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,5">
+                            <TextBlock Text="Keyword" Foreground="White" DockPanel.Dock="Left"
+                                       Width="230"/>
+                            <Rectangle x:Name="KeywordRect" Style="{StaticResource ColorRect}"
+                                       Fill="#569cd6"/>
+                            <TextBox Text="#569cd6" Background="#1E1E1E" Foreground="White"
+                                     DockPanel.Dock="Right" Width="55" BorderThickness="0"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,5">
+                            <TextBlock Text="Keyword - Condition / Statement" Foreground="White" DockPanel.Dock="Left"
+                                       Width="230"/>
+                            <Rectangle x:Name="KeywordconRect" Style="{StaticResource ColorRect}"
+                                       Fill="#d8a0df"/>
+                            <TextBox Text="#d8a0df" Background="#1E1E1E" Foreground="White"
+                                     DockPanel.Dock="Right" Width="55" BorderThickness="0"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,5">
+                            <TextBlock Text="Number" Foreground="White" DockPanel.Dock="Left"
+                                       Width="230"/>
+                            <Rectangle x:Name="NumberRect" Style="{StaticResource ColorRect}"
+                                       Fill="#83cea8"/>
+                            <TextBox Text="#83cea8" Background="#1E1E1E" Foreground="White"
+                                     DockPanel.Dock="Right" Width="55" BorderThickness="0"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,5">
+                            <TextBlock Text="Method" Foreground="White" DockPanel.Dock="Left"
+                                       Width="230"/>
+                            <Rectangle x:Name="MethodRect" Style="{StaticResource ColorRect}"
+                                       Fill="#dcdcaa"/>
+                            <TextBox Text="#dcdcaa" Background="#1E1E1E" Foreground="White"
                                      DockPanel.Dock="Right" Width="55" BorderThickness="0"/>
                         </DockPanel>
                     </StackPanel>

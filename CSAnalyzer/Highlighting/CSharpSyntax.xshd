@@ -14,6 +14,17 @@
     <Span color="Comment" begin="//" />
     <Span color="Comment" multiline="true" begin="/\*" end="\*/" />
 
+    <Span color="Keyword">
+      <Begin>\#include</Begin>
+      <RuleSet>
+        <Span begin="\s" foreground="White">
+          <RuleSet>
+            <Span begin="&lt;" end="&gt;" color="Escape"/>
+          </RuleSet>
+        </Span>
+      </RuleSet>
+    </Span>
+    
     <Span color="String">
       <Begin>"</Begin>
       <End>"</End>
@@ -184,7 +195,7 @@
         )
         ([eE][+-]?[0-9]+)?
     </Rule>
-
+    
     <Rule color="Method">
       \b[\w\d_]+(?=\s*\()
     </Rule>

@@ -73,5 +73,35 @@ namespace CSAnalyzer
                 _ => throw new InvalidOperationException("Unknown ListBox Selection.")
             };
         }
+
+        private void Rectangle_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var rect = sender as Rectangle;
+
+            Action act = rect.Name switch
+            {
+                "Comment" => CommentRect_Click,
+                "String" => StringRect_Click,
+                _ => throw new InvalidCastException("Color Selection Error")
+            };
+        }
+
+        /*
+        private string GetColor(string color)
+        {
+            System.Windows.Forms.ColorDialog dialog = new System.Windows.Forms.ColorDialog();
+
+        }
+        */
+
+        private void CommentRect_Click()
+        {
+            
+        }
+
+        private void StringRect_Click()
+        {
+
+        }
     }
 }

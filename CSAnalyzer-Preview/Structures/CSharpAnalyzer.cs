@@ -34,9 +34,9 @@ namespace CSAnalyzer.Structures
 
         public async Task<AnaylzeResult> Evaluate(string cs)
         {
-            cs = GetImports(cs);
             try
             {
+                cs = GetImports(cs);
                 var globals = new Variables(Main);
 
                 var sopts = ScriptOptions.Default;
@@ -60,7 +60,12 @@ namespace CSAnalyzer.Structures
 
         public AnaylzeResult Compile(string cs)
         {
-            cs = GetImports(cs);
+            try {
+                cs = GetImports(cs); }
+            catch (Exception e)
+            {
+                return new AnaylzeResult(e.ToString(), true);
+            }
 
             var globals = new Variables(Main);
 
@@ -80,17 +85,19 @@ namespace CSAnalyzer.Structures
                 return new AnaylzeResult(builder.ToString(), true);
             else
                 return new AnaylzeResult(builder.ToString(), false);
-        }
+            }
 
         private static string GetImports(string cs)
         {
-            var matches = Regex.Matches(cs, @"\#include\s\<[\w\-_\:\/\.]+\>");
+            var matches = Regex.Matches(cs, @"\#include\s\<[\w\-_\:\/\.\\]+\>");
 
             for (int i = 0; i < matches.Count; i++)
             {
                 var s = matches[i].Value[10..^1];
 
-                cs = cs.Replace(matches[i].Value, File.ReadAllText(s));
+                var t = File.ReadAllText(s);
+
+                cs = cs.Replace(matches[i].Value, t);
             }
 
             return cs;
