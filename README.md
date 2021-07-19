@@ -18,7 +18,7 @@ Using with "#include <path>", Can include other files.
 
 * Ko
   
-C# 실행기! (Roslyn과 ICSharpCode 사용)
+C# 분석기! (Roslyn과 ICSharpCode 사용)
   
 Visual Studio를 사용하다 보면, 작은 실험을 위한 코드를 실행하기에는 너무 무겁다고 생각이 들것입니다.
   
