@@ -42,6 +42,8 @@ namespace CSAnalyzer
 
         public Dictionary<string, IHighlightingDefinition> HighlightingDictionary { get; set; }
 
+        const string SaveExtensions = "C# Source File (*.cs)|*.cs|C# Script File (*.csi)|*.csi|All Files (*.*)|*.*";
+
         private bool isEdited;
         public bool IsEdited
         {
@@ -293,7 +295,8 @@ namespace CSAnalyzer
                 var r = MessageBox.Show("Do you want to save?", "Save?", MessageBoxButton.YesNoCancel);
                 if (r == MessageBoxResult.Yes)
                 {
-                    var save = new System.Windows.Forms.SaveFileDialog();
+                    var save = new System.Windows.Forms.SaveFileDialog()
+                    { Filter = SaveExtensions };
                     if (save.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                     {
                         await System.IO.File.WriteAllTextAsync(save.FileName, TextEditor.Text);
@@ -399,7 +402,8 @@ namespace CSAnalyzer
             FileTextBox.Text = $@"unnamed.{CurrentLanguage switch
                 {
                     Structures.Language.CSharp => "cs",
-                    Structures.Language.Python => "py"
+                    Structures.Language.Python => "py",
+                    _ => throw new InvalidCastException()
                 }
             }";
             TextEditor.Text = string.Empty;
@@ -419,7 +423,8 @@ namespace CSAnalyzer
 
             var open = new System.Windows.Forms.OpenFileDialog()
             {
-                Multiselect = false
+                Multiselect = false,
+                Filter = SaveExtensions
             };
 
             if (open.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -471,7 +476,10 @@ namespace CSAnalyzer
 
         private async void FileSaveAs_Click(object sender, RoutedEventArgs e)
         {
-            var open = new System.Windows.Forms.SaveFileDialog();
+            var open = new System.Windows.Forms.SaveFileDialog()
+            {
+                Filter = SaveExtensions 
+            };
 
             if (open.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {

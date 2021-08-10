@@ -190,7 +190,7 @@
             </Grid.ColumnDefinitions>
 
             <Image Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"
-                   Source="{StaticResource WindowIcon}"/>
+                   Source="{StaticResource WindowIcon}" Margin="0,3,0,5"/>
             <TextBlock Foreground="White" Text="CSharp Analyzer" Grid.Column="1"/>
             <Button Style="{StaticResource TitleButton}" Grid.Column="2" x:Uid="Minimum">
                 <Image Style="{StaticResource TitleBarImage}" Source="{StaticResource Minimum}"/>

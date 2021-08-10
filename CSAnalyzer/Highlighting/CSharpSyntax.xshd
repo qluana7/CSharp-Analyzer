@@ -53,7 +53,7 @@
       <Begin>\$"</Begin>
       <End>"</End>
       <RuleSet>
-        <Span begin="\\" end="."/>
+        <Span begin="\\" end="." color="Escape"/>
         <Span begin="\{\{" end=""/>
         <Span begin="{" end="}" foreground="White" ruleSet=""/>
       </RuleSet>

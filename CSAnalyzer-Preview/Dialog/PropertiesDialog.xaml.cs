@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -70,8 +71,16 @@ namespace CSAnalyzer
             var panel = s switch
             {
                 "General" => GeneralStackPanel,
+                "Colors" => ColorsStackPanel,
                 _ => throw new InvalidOperationException("Unknown ListBox Selection.")
             };
+
+            var panels = SettingGrid.Children.Cast<UIElement>().Where(l => l is StackPanel && l.Uid == "SettingPanel");
+
+            for (int i = 0; i < panels.Count(); i++)
+                panels.ElementAt(i).Visibility = Visibility.Collapsed;
+
+            panel.Visibility = Visibility.Visible;
         }
 
         private void Rectangle_MouseDown(object sender, MouseButtonEventArgs e)
@@ -82,6 +91,7 @@ namespace CSAnalyzer
             {
                 "Comment" => CommentRect_Click,
                 "String" => StringRect_Click,
+                "Char" => CharRect_Click,
                 _ => throw new InvalidCastException("Color Selection Error")
             };
         }
@@ -100,6 +110,11 @@ namespace CSAnalyzer
         }
 
         private void StringRect_Click()
+        {
+
+        }
+
+        private void CharRect_Click()
         {
 
         }

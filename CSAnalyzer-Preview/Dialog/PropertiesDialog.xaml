@@ -79,7 +79,7 @@
             </Button>
         </Grid>
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" x:Name="SettingGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.6*"/>
                 <ColumnDefinition />
@@ -121,7 +121,7 @@
             </StackPanel>
 
             <StackPanel Grid.Column="1" Grid.Row="0" Margin="20" x:Name="GeneralStackPanel"
-                        Orientation="Vertical" Visibility="Collapsed">
+                        Orientation="Vertical" Visibility="Collapsed" x:Uid="SettingPanel">
                 <GroupBox BorderThickness="0" IsEnabled="False">
                     <GroupBox.Header>
                         <TextBlock Foreground="Gray" Text="File" FontSize="10"/>
@@ -162,7 +162,7 @@
             </StackPanel>
 
             <StackPanel Grid.Column="1" Grid.Row="0" Margin="20" x:Name="ColorsStackPanel"
-                        Orientation="Vertical" Visibility="Visible">
+                        Orientation="Vertical" Visibility="Visible" x:Uid="SettingPanel">
                 <GroupBox BorderThickness="0">
                     <GroupBox.Header>
                         <TextBlock Foreground="Gray" Text="Color Setting" FontSize="10"/>

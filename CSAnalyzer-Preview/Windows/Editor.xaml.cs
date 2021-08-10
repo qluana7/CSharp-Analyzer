@@ -41,10 +41,12 @@ namespace CSAnalyzer
         public string CurrentFile { get; set; }
         public Language CurrentLanguage { get; set; }
 
-        public string LocalPath => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+        public static string LocalPath => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
                                         + @"\CSAnaylzer";
 
         public Dictionary<string, IHighlightingDefinition> HighlightingDictionary { get; set; }
+
+        const string SaveExtensions = "C# Source File (*.cs)|*.cs|C# Script File (*.csi)|*.csi|All Files (*.*)|*.*";
 
         private bool isEdited;
         public bool IsEdited
@@ -106,7 +108,7 @@ namespace CSAnalyzer
             }
         }
 
-        private void CheckError()
+        private static void CheckError()
         {
             var files = System.IO.Directory.GetFiles(LocalPath + @"\tmp");
 
@@ -141,7 +143,27 @@ namespace CSAnalyzer
 
             TextEditor.TextArea.Caret.PositionChanged += TextEditor_PositionChanged;
 
+            TextEditor.PreviewMouseWheel += TextEditor_PreviewMouseWheel;
+
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        private void TextEditor_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.Control)
+                TextEditor.FontSize += new Func<double>(() => {
+                    Func<double, double, double> m =
+                    (TextEditor.FontSize > 6 && TextEditor.FontSize < 60) ? Math.Max : Math.Min;
+                    
+                    return Math.CopySign(m(e.Delta % 2 + 1, 0), e.Delta);
+                })();
+
+            /* TextEditor.FontSize +=
+             * Math.CopySign(new Func<double, double, double>((double a, double b) => 
+             *          (TextEditor.FontSize > 6 && TextEditor.FontSize < 60)
+             *          ? Math.Max(a, b) : Math.Min(a, b))(e.Delta % 2 + 1, 0)
+             *          , e.Delta);
+             */
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -415,7 +437,8 @@ namespace CSAnalyzer
                 var r = MessageBox.Show("Do you want to save?", "Save?", MessageBoxButton.YesNoCancel);
                 if (r == MessageBoxResult.Yes)
                 {
-                    var save = new System.Windows.Forms.SaveFileDialog();
+                    var save = new System.Windows.Forms.SaveFileDialog()
+                    { Filter = SaveExtensions };
                     if (save.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                     {
                         await System.IO.File.WriteAllTextAsync(save.FileName, TextEditor.Text);
@@ -543,7 +566,8 @@ namespace CSAnalyzer
 
             var open = new System.Windows.Forms.OpenFileDialog()
             {
-                Multiselect = false
+                Multiselect = false,
+                Filter = SaveExtensions
             };
 
             if (open.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -600,7 +624,8 @@ namespace CSAnalyzer
 
         private async void FileSaveAs_Click(object sender, RoutedEventArgs e)
         {
-            var open = new System.Windows.Forms.SaveFileDialog();
+            var open = new System.Windows.Forms.SaveFileDialog()
+            { Filter = SaveExtensions };
 
             if (open.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {

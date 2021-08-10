@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -7,7 +7,7 @@
     <UseWindowsForm>true</UseWindowsForm>
     <LangVersion>9.0</LangVersion>
     <Platforms>AnyCPU;x64;x86</Platforms>
-    <ApplicationIcon>Resources\WindowIcon.ico</ApplicationIcon>
+    <ApplicationIcon>WindowIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -38,6 +38,11 @@
     <None Remove="Resources\Status_Ready.png" />
     <None Remove="Resources\Status_Success.png" />
     <None Remove="Resources\Undo.png" />
+    <None Remove="Resources\WindowIcon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
@@ -62,6 +67,7 @@
     <Resource Include="Resources\Status_Ready.png" />
     <Resource Include="Resources\Status_Success.png" />
     <Resource Include="Resources\Undo.png" />
+    <Resource Include="Resources\WindowIcon.ico" />
   </ItemGroup>
 
   <ItemGroup>
