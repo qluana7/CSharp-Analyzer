@@ -358,6 +358,11 @@ namespace CSAnalyzer
                         RunSaveAsAndRun_Click(null, null);
                 }
                 #endregion
+
+                #region ToolsItem
+                else if (e.Key == Key.OemSemicolon)
+                    ToolsASI_Click(null, null);
+                #endregion
             }
 
             if ((sender as Control).Name == "TextEditor")
@@ -835,6 +840,43 @@ namespace CSAnalyzer
             Analyzer = new PythonAnalyzer();
             CurrentLanguage = Structures.Language.Python;
             TextEditor.SyntaxHighlighting = HighlightingDictionary["Python"];
+        }
+
+        private void ToolsASI_Click(object sender, RoutedEventArgs e)
+        {
+            var com = Analyzer.Compile(TextEditor.Text);
+
+            if (!com.Exception)
+            {
+                MessageBox.Show("Not found.");
+                return;
+            }
+
+            var c = com.Result.Split('\n');
+
+            if (!c.Any(l => l.Contains("CS1002")))
+            {
+                MessageBox.Show("Not found.");
+                return;
+            }
+
+            var p = c.Where(l => l.Contains("CS1002")).Select(l =>
+                        {
+                            var tmp = l.Split(')')[0][1..].Split(',');
+                            return new { X = int.Parse(tmp[0]), Y = int.Parse(tmp[1]) };
+                        });
+
+            if (MessageBox.Show($"{p.Count()} Error Found. Want fix?", "Fix?", MessageBoxButton.YesNo) == MessageBoxResult.No)
+                return;
+
+            foreach (var item in p)
+            {
+                var of = TextEditor.Document.GetOffset(item.X, item.Y);
+                TextEditor.Document.Insert(of, ";");
+            }
+
+            MessageBox.Show($"Finished! Changes {p.Count()}.");
+            return;
         }
         #endregion
 

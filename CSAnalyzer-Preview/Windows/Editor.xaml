@@ -448,6 +448,13 @@
                 <MenuItem Header="Save and Run" Click="RunSaveAndRun_Click" InputGestureText="Ctrl+Shift+B"/>
                 <MenuItem Header="SaveAs and Run" Click="RunSaveAsAndRun_Click" InputGestureText="Ctrl+Alt+B"/>
             </MenuItem>
+            <MenuItem x:Name="MenuTools">
+                <MenuItem.Header>
+                    <TextBlock Text="Tools" VerticalAlignment="Center" Foreground="White"
+                               HorizontalAlignment="Center" Padding="2,0"/>
+                </MenuItem.Header>
+                <MenuItem Header="Auto Insert Semicolon" Click="ToolsASI_Click" InputGestureText="Ctrl+;"/>
+            </MenuItem>
             <MenuItem x:Name="MenuLanguage">
                 <MenuItem.Header>
                     <TextBlock Text="Language" VerticalAlignment="Center" Foreground="White"
@@ -546,7 +553,7 @@
                 <TabItem Name="Compiler" Width="60" Height="20" Margin="1,0" Background="Transparent" TabIndex="0">
                     <TextBox x:Name="CompileTextBox" Background="#1E1E1E"
                          Foreground="White" BorderThickness="0"
-                             IsReadOnly="True" Focusable="False"
+                             IsReadOnly="True"
                              VerticalScrollBarVisibility="Auto"
                              TextWrapping="Wrap">
                         <!--
@@ -638,7 +645,7 @@
                 <TabItem Name="Output" Width="60" Height="20" Margin="1,0" Background="Transparent" TabIndex="1">
                     <TextBox x:Name="ResultTextBox" Background="#1E1E1E"
                              Foreground="White" BorderThickness="0"
-                             IsReadOnly="True" Focusable="False"
+                             IsReadOnly="True"
                              VerticalScrollBarVisibility="Auto"
                              TextWrapping="Wrap"/>
                     <TabItem.Header>
