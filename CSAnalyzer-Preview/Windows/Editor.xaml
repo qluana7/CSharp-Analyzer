@@ -453,7 +453,7 @@
                     <TextBlock Text="Tools" VerticalAlignment="Center" Foreground="White"
                                HorizontalAlignment="Center" Padding="2,0"/>
                 </MenuItem.Header>
-                <MenuItem Header="Auto Insert Semicolon" Click="ToolsASI_Click" InputGestureText="Ctrl+;"/>
+                <MenuItem Header="Auto Insert Semicolon" Click="ToolsAIS" InputGestureText="Ctrl+;"/>
             </MenuItem>
             <MenuItem x:Name="MenuLanguage">
                 <MenuItem.Header>

@@ -361,7 +361,7 @@ namespace CSAnalyzer
 
                 #region ToolsItem
                 else if (e.Key == Key.OemSemicolon)
-                    ToolsASI_Click(null, null);
+                    ToolsAIS(null, null);
                 #endregion
             }
 
@@ -842,7 +842,7 @@ namespace CSAnalyzer
             TextEditor.SyntaxHighlighting = HighlightingDictionary["Python"];
         }
 
-        private void ToolsASI_Click(object sender, RoutedEventArgs e)
+        private void ToolsAIS(object sender, RoutedEventArgs e)
         {
             var com = Analyzer.Compile(TextEditor.Text);
 
@@ -863,7 +863,7 @@ namespace CSAnalyzer
             var p = c.Where(l => l.Contains("CS1002")).Select(l =>
                         {
                             var tmp = l.Split(')')[0][1..].Split(',');
-                            return new { X = int.Parse(tmp[0]), Y = int.Parse(tmp[1]) };
+                            return (X: int.Parse(tmp[0]), Y: int.Parse(tmp[1]));
                         });
 
             if (MessageBox.Show($"{p.Count()} Error Found. Want fix?", "Fix?", MessageBoxButton.YesNo) == MessageBoxResult.No)
